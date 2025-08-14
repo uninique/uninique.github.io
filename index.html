@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Random Recipe Picker</title>
+  <style>
+    body {
+      font-family: Georgia, serif;
+      text-align: center;
+      margin-top: 50px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      background-color: #ffe6f0;
+    }
+    button {
+      font-family: Georgia, serif;
+      font-size: 18px;
+      padding: 10px 20px;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+    .recipe {
+      border: 2px solid #ccc;
+      padding: 20px;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+      text-align: left;
+    }
+    h2 {
+      margin-top: 0;
+    }
+    .recipe img {
+      max-width: 100%;
+      border-radius: 6px;
+      margin-bottom: 15px;
+    }
+    ul, ol {
+      padding-left: 1.2em;
+      margin-top: 0.5em;
+      margin-bottom: 0.5em;
+    }
+    li {
+      margin-left: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Hangry?</h1>
+  <p>Then you should eat!</p>
+  
+  <button onclick="showRandomRecipe()">Feed me, Seymour</button>
+
+  <div id="recipeContainer" class="recipe" style="display:none;">
+    <h2 id="recipeTitle"></h2>
+    <img id="recipeImage" src="" alt="Recipe image">
+    <p id="recipeDescription"></p>
+    <p id="recipeLink"></p>
+    <h3>Ingredients</h3>
+    <ul id="recipeIngredients"></ul>
+    <h3>Instructions</h3>
+    <ol id="recipeInstructions"></ol>
+  </div>
+
+  <script>
+const recipes = [
+  {
+    title: "Spring Rolls",
+    image: "https://minimalistbaker.com/wp-content/uploads/2014/12/Rainbow-Spring-Rolls-SQUARE-200x200.jpg",
+    description: "Cromch",
+    link: "https://minimalistbaker.com/rainbow-spring-rolls-with-ginger-peanut-sauce/",
+    ingredients: ["7-8 rice spring roll papers",
+  "1 medium beet (skin removed and finely grated)",
+  "1/2 yellow and red pepper (seeded, thinly sliced)",
+  "1 cup carrots (thinly sliced)",
+  "1 ripe mango (cubed)",
+  "1 large bunch mint leaves",
+  "1 large bunch cilantro (cut from stems)",
+  "8 ounces extra-firm tofu or cooked vermicelli noodles (optional, or use 1 cup cooked quinoa in place of 8 ounces tofu or rice noodles)",
+  "1/2 cup salted natural peanut or almond butter",
+  "1 1/2 Tbsp soy sauce (tamari for gluten-free eaters)",
+  "2-3 Tbsp brown sugar or maple syrup (add to taste)",
+  "1/2 medium lime, juiced",
+  "1/2 tsp chili garlic sauce",
+  "1/2 tsp fresh grated ginger ",
+  "Hot water (to thin)"],
+    instructions: []
+  },
+  {
+    title: "Posole rojo",
+    image: "https://www.foodandwine.com/thmb/MuV16R1GijOi-B7tl7fAcnerwbI=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/posole-rojo-ft-RECIPE0818-2d7d7b0f97f94cdcb2115ef63f809341.jpg",
+    description: "Creamy Italian pasta with eggs, cheese, and pancetta.",
+    link: "https://wp.me/pcv1ON-iD",
+    ingredients: [ "1 lb. dried hominy",
+    "5-6 garlic cloves, whole",
+    "3 bay leaves",
+    "2 cups shredded chicken",
+    "2 dried ancho chiles, stems and seeds removed",
+    "3 dried guajillo chiles, stems and seeds removed",
+    "1/2 white onion",
+    "3 garlic cloves",
+    "2 tsp. cumin",
+    "2 tsp. oregano",
+    "3 Tbsp. olive oil",
+    "1 tsp. salt", 
+    "Sliced radishes",
+    "Cilantro",
+    "Limes",
+    "Chopped white or green onions",
+    "Chopped romaine",
+    "Tortilla chips"
+  ],
+    instructions: ["Soak the hominy in a large bowl overnight. Rinse and drain the next morning.",
+  "Place the hominy in a large soup pot and cover with water. Add the garlic cloves and bay leaves. Bring to a boil, then reduce heat and simmer until the posole has bloomed (soft and opened), about 2 hours. Add more water periodically as needed. Remove garlic cloves and bay leaves. Season with salt to taste. Add chicken into the pot.",
+  "Meanwhile, make the chile sauce: place the dried chiles in a small pot of water. Bring to a boil and simmer for 10 minutes.",
+  "Place the chiles, along with 3/4 cup of their cooking liquid, into a food processor. Add 1/2 white onion, 3 garlic cloves, cumin, oregano, and olive oil. Process until smooth. Press through a mesh strainer, reserving the liquid and discarding the solids.",
+  "Add the chile sauce to the pot with the posole and chicken. Simmer for 20 minutes. Season with salt to taste.",
+  "Serve with lime, cilantro, radishes, and tortilla chips."]
+  },
+  {
+    title: "Risotto",
+    image: "https://www.recipetineats.com/tachyon/2019/10/Mushroom-Risotto_5.jpg?resize=900%2C1260&zoom=0.72",
+description: "Any excuse to eat wine",
+    link: "https://www.recipetineats.com/mushroom-risotto/",
+    ingredients: ["Mushrooms",
+  "4 tbsp butter",
+  "2 tbsp olive oil",
+  "3 garlic cloves, minced",
+  "1/2 tsp salt",
+  "1/2 tsp pepper",
+  "2 French onions, finely chopped (or 1/2 onion)",
+  "1/4 cup dry white wine",
+  "1 1/4 cups arborio rice, uncooked",
+  "5 cups chicken broth or stock, low sodium, warm",
+  "1/2 cup parmesan cheese, finely grated"],
+    instructions: ["Cook mushrooms in large pot with oil and butter until brown", "Add salt pepper and garlic and continue to cook 1.5 min", "remove into bowl and continue with risotto in same pot"]
+  },
+  {
+    title: "Vegetarisches Kartoffel-Linsen-Curry",
+    image: "https://img.chefkoch-cdn.de/rezepte/3166671471369024/bilder/938364/crop-640x360/vegetarisches-kartoffel-linsen-curry.jpg",
+    description: "I stg it tastes better than this pic looks",
+    link: "https://www.chefkoch.de/rezepte/3166671471369024/Vegetarisches-Kartoffel-Linsen-Curry.html",
+    ingredients: [
+      "3m-große Kartoffel(n)", "2 Zwiebel(n)", "2 Knoblauchzehe(n)", "60 g Linsen",
+      "400 ml Gemüsebrühe", "2 TL gehäuft Tomatenmark", "1 EL Pflanzenöl",
+      "1 TL, gehäuft Ingwerpulver", "2 TL, gestr. Currypaste, rot", "1 TL, gehäuft Currypulver",
+      "1 TL, gehäuft Rohrzucker", "1 Msp. Kreuzkümmel", "2 Msp. Kardamompulver"
+    ],
+    instructions: [
+      "Die Kartoffeln müssen nicht zwingend geschält werden. Die Kartoffeln gut reinigen und in ca. 1 cm große Würfel schneiden.",
+      "Die Zwiebeln schälen, vierteln und in grobe Streifen zerteilen. Auch den Knoblauch fein hacken. Die Linsen abwiegen und bereitstellen. Die Gemüsebrühe vorbereiten.",
+      "In einem mittelgroßen Topf das Pflanzenöl erhitzen. Die Zwiebeln und den Knoblauch im heißen Öl anschwitzen. Die Kartoffelwürfel hinzugeben und etwas anbraten. Die Currypaste und das Tomatenmark hinzugeben, gut umrühren und etwas anrösten lassen. Alles mit 300 ml Gemüsebrühe ablöschen. Die Linsen in den Topf geben und die Gewürze hinzufügen. Alles gut verrühren. Nun bei geringerer Hitze alles 25 Minuten köcheln lassen.",
+      "Um die erwünschte Konsistenz zu erreichen, die restliche Gemüsebrühe nutzen. Die Linsen sollten nicht zu weich werden. In der Garzeit als Beilage Reis vorbereiten. Nur sollte dann die Konsistenz nicht zu flüssig sein."
+    ]
+      },
+{
+  title: "Nachos",
+  image: "https://img1.wsimg.com/isteam/ip/b955ab79-9b5d-47f5-89fb-1cd12621ba73/20250203_143544.jpg/:/cr=t:0%25,l:0%25,w:100%25,h:100%25/rs=w:1280",
+  description: "Si por favor",
+  link: "https://aletheatodaro.com/recipes/f/shredded-tofu-chipotle-nachos",
+  ingredients: ["oil", "1 small diced onion", "1 block extra firm tofu", "1 tsp garlic powder", "1 tsp chipotle powder", "1 tsp cumin", "1 tsp oregano", "1 tsp chili flakes", "1 tsp chili powder", "2 tsp onion powder", "2 tsp smoked paprika", "salt to taste", "2-3 diced chipotle peppers in adobo", "1 can black beans", "1 can pinto beans", "1 cup corn", "tortilla chips", "shredded cheddar and pepper jack", "avocado", "cilantro", "green onions", "pickled red onions", "lime wedges", "jalepenos"],
+  instructions: [
+    "To make quick pickles red onions, heat 2 cups vinegar, 2 cups water, 1/3 cup sugar, and 2 tbsp salt until dissolved and pour over red onions and peppercorns.", "preheat oven to 196 C",
+    "Use a cheese grater to shred tofu and saute with garlic powder, chipotle powder, cumin, oregano, chili flakes, chili powder, onion powder, paprika, and salt. Add in diced chipotle peppers and mix well",
+    "Add in the beans and corn, reduce heat and let cook for 5-8 mins, then remove from heat", "Add tortilla chips to baking sheet, followed by a layer of cheddar then a layer of pepper jack. Cover with tofu mixture, then add more cheese.", "Bake for 10-25 mins or until chese melts. Garnish with cilantro, onions, jalepenos, green onions, lime, etc"
+  ]
+},
+{
+  title: "Lasagna",
+  image: "https://cdn.apartmenttherapy.info/image/upload/f_auto,q_auto:eco,c_fill,g_auto,w_728,h_546/k%2Farchive%2F58d0cf4813e442201eb26cc341fcf704539034f4",
+  description: "Here's lookin at you, Martha",
+  link: "https://www.thekitchn.com/recipe-ina-gartens-roasted-vegetable-lasagna-recipes-from-the-kitchn-217155",
+  ingredients: [],
+  instructions: []
+},
+{
+  title: "Shakshuka",
+  image: "https://cdn.loveandlemons.com/wp-content/uploads/2017/01/shakshuka.jpg",
+  description: "did someone say poached eggs?",
+  link: "https://www.loveandlemons.com/shakshuka-recipe/",
+  ingredients: ["canned diced tomatoes", "eggs", "fresh tomatoes", "kale or spinach", "heck of a lot of cumin or ras el hanout", "onion", "garlic", "mushrooms if wanted"],
+  instructions: []
+},
+{
+  title: "Chili Crisp Snap Pea Salad",
+  image: "https://munchingwithmariyah.com/wp-content/uploads/2025/05/IMG_7025-600x600.jpg",
+  description: "did someone say poached eggs?",
+  link: "https://munchingwithmariyah.com/chili-crisp-snap-pea-salad/",
+  ingredients: ["1 cup (140 g) frozen shelled edamame", 
+"1 package (6.5 oz or 180 g) snap peas, thinly sliced on a bias", 
+"1/4 cup packed cilantro, finely chopped",
+"4 scallions, thinly sliced on a bias",
+"1 tbsp (10 g) lemon juice",
+"2 tsp (3 g) toasted sesame seeds",
+"2 tsp (10 g) honey",
+"2 tsp (11 g) finely grated ginger", 
+"1 tsp (6 g) chili crisp (use your favorite chili crisp and adjust to your spice level)",
+"2 tbsp (16 g) sesame oil",
+"Kosher salt"],
+  instructions: ["Blanch the edamame. To a pot of boiling water, dump in the frozen edamame along with a generous pinch of kosher salt. Reduce the heat to medium and let the edamame cook for 3 minutes or until some of the beans start to float to the top. Drain and rinse immediately with cold water to stop the cooking process.", 
+"Prep the peas and greens. Wash the snap peas and pat dry. Thinly slice the snap peas on a bias (trust me, they taste different sliced like this) and add to a serving bowl, along with the cilantro, scallions, and edamame. Pour over the lemon juice and set aside.", 
+"Make the dressing. Add the toasted sesame seeds, honey, ginger, and chili crisp to a heat-proof bowl or jar. Heat the sesame oil in a pan on high heat until it shimmers and looks watery (this is a good indicator the oil is hot, but hasn’t burnt). Pour the oil over the bowl of aromatics – this will flash cook the raw ginger and amplify the flavors of everything. Stir well.", 
+"Finish and serve. Pour the dressing over the salad, sprinkle over a generous pinch of salt and toss to combine. Adjust for salt as needed and serve immediately. Serve with a sticky teriyaki (or chili crisp) fish like salmon, pair with sticky short-grain rice, or top with crispy rice for crunch."]
+},
+{
+  title: "Adas Polo ba Khorma (Persian Lentil Rice With Dates)",
+  image: "https://static01.nyt.com/images/2024/03/06/multimedia/06APPErex-lentil-rice-jlbf/06APPErex-lentil-rice-jlbf-jumbo.jpg?quality=75&auto=webp",
+  description: "A Comforting Rice Dish That Won’t Break the Bank",
+  link: "https://cooking.nytimes.com/recipes/1025151-adas-polo-ba-khorma-persian-lentil-rice-with-dates",
+  ingredients: ["1 cup green lentils, rinsed", 
+"2 tablespoons ground cinnamon", 
+"½ teaspoon ground turmeric", 
+"2 tablespoons plus 1 teaspoon kosher salt (such as Diamond Crystal), more as needed", 
+"2½ cups basmati rice, rinsed and drained", 
+"1 cup chopped fresh herbs, such as cilantro, dill, mint or a combination", 
+"1 cup plain whole-milk yogurt, for serving (optional)", 
+"6 tablespoons extra-virgin olive oil or clarified butter, plus more for serving (see Tip)", 
+"2 yellow onions, finely diced", 
+"12 fresh Medjool dates, pitted and diced"],
+  instructions: ["Bring 4 cups water to boil in a medium saucepan over high heat. Add the lentils, cinnamon, turmeric and 2 tablespoons salt. Stir well to combine, breaking up any clumps. Cover and reduce heat to medium. Simmer until the lentils are cooked but still have a bite, 7 to 10 minutes. Drain lentils and set aside.", "Using the same medium saucepan, bring 2 cups water to a boil. Add the rice, cooked lentils, 1 teaspoon salt and enough hot water to cover the rice by 1 inch. Cook, uncovered, until all the water is absorbed, 10 to 14 minutes.", "Reduce heat to low, wrap the pot lid in a clean kitchen towel, cover the pan and let the rice steam for 10 minutes. Fluff rice with a fork; taste and add salt if needed.", "While the rice is cooking, prepare the onion-date mixture: In a skillet, heat 4 tablespoons oil or clarified butter until hot but not smoking. Add onions and a pinch of salt, and cook until the onions are dark golden and a little crispy, 9 to 14 minutes. Transfer onions to a bowl and return the skillet to the heat.", "Add remaining 2 tablespoons oil to the skillet and, once hot, add the dates and warm them through, 1 to 2 minutes. Stir dates into the bowl with the onions.", "To serve, spoon a layer of rice and lentils into a warmed serving bowl, then add a layer of onion-date mixture and sprinkle with chopped herbs. Keep alternating layers, ending with the onion-date mixture and a final sprinkling of herbs. Drizzle with more oil and top with a dollop of yogurt if you like.", "TIP: If you don't have clarified butter but would like a buttery flavor, you can use 2 tablespoons unsalted butter to warm the dates, and then top the dish with more melted butter. Be sure to use olive oil (or clarified butter) for the onions or they might burn"]
+},
+{
+  title: "Gyoza",
+  image: "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcRdZ52urHb9pHQMgKfN9H31YUzAVZ6kPQhAFjg8sHWH8PxCRTBfEjOw6bA1vHV1Ll-hCwO5V7ZNLlybnKdlIOmJb6ztsWxdlv3Od1Cghd9cdPgjFPvIbDqmAAU",
+  description: "More of a side dish but still delish",
+  link: "",
+  ingredients: ["frozen gyoza or dumplings"],
+  instructions: ["pan fry or steam"]
+},
+{
+  title: "Cold Noodles with Tomatoes",
+  image: "https://static01.nyt.com/images/2021/09/07/dining/EK-cold-noodles-tomatoes/EK-cold-noodles-tomatoes-jumbo.jpg",
+  description: "Serves 4 if shrimp added",
+  link: "https://cooking.nytimes.com/recipes/1022543-cold-noodles-with-tomatoes",
+  ingredients: ["2 pints ripe cherry tomatoes, halved", 
+"1 teaspoon kosher salt (Diamond Crystal)", 
+"12 to 14ounces somyeon, somen, capellini or other thin wheat noodle", 
+"¼ cup rice vinegar", 
+"2 tablespoons soy sauce", 
+"1 tablespoons granulated sugar", 
+"2 large garlic cloves, finely grated", 
+"2 teaspoons Dijon mustard", 
+"1 teaspoon toasted sesame oil", 
+"2 cups cold filtered water", 
+"1 tablespoon toasted sesame seeds", 
+"4 radishes, thinly sliced", 
+"2 scallions, thinly sliced at an angle", 
+"1 cups crushed or cubed ice",
+"2 baby bok choy, cut on diagonal",
+"shrimp, halved lengthwise"],
+  instructions: ["In a large bowl, toss together the tomatoes and salt. Let sit until juicy, about 10 minutes.",
+"Meanwhile, bring a large pot of water to a boil. Cook the noodles according to package instructions, drain and rinse under cold water. Put shrimp (halved lengthwise) and bok choy in pot under strainer for noodles. Set aside.",
+"Add the vinegar, soy sauce, sugar, garlic, mustard and sesame oil to the tomatoes, and toss with a spoon until well combined. Stir the filtered water into the tomatoes and sprinkle the surface of the broth with the sesame seeds, radishes and scallions.",
+"Right before serving, add the ice to the broth. Divide the noodles among bowls, and ladle in the broth and any unmelted ice, making sure each serving gets a nice sprinkling of tomatoes, radishes, scallions and sesame seeds."]
+},
+{
+  title: "Lemony orzo with asparagus",
+  image: "https://static01.nyt.com/images/2025/03/07/multimedia/AS-Lemony-Orzo-with-Asparagus-pgmk/AS-Lemony-Orzo-with-Asparagus-pgmk-jumbo.jpg?quality=75&auto=webp",
+  description: "Yummer Summer",
+  link: "https://cooking.nytimes.com/recipes/1021068-lemony-orzo-with-asparagus-and-garlic-bread-crumbs",
+  ingredients: ["Kosher salt and black pepper", 
+"1 cup orzo", 
+"1 pound asparagus, trimmed and thinly sliced on a diagonal (about ¼-inch thick)", 
+"5 tablespoons extra-virgin olive oil", 
+"1 teaspoon lemon zest plus 3 tablespoons lemon juice, plus more as needed (from about 1 large lemon)", 
+"½ cup panko or homemade bread crumbs", 
+"1 small garlic clove, finely grated", 
+"¼ cup finely grated Parmesan, plus more for serving", 
+"½ cup fresh dill, mint or parsley leaves (or any combination), torn if large"],
+  instructions: ["Bring a medium pot of salted water to a boil. Add the orzo and cook until al dente according to package directions. Two minutes before the orzo is done, add the asparagus. Drain the orzo and asparagus. Wipe out and reserve the pot.", "While the orzo and asparagus cook, make the dressing: In a large bowl, stir together 3 tablespoons oil and the lemon zest and juice; season to taste with salt and pepper. Add the drained orzo and asparagus and toss to coat. Set aside while you toast the bread crumbs.", 
+"In the reserved pot, heat the remaining 2 tablespoons oil over medium. Add the panko and cook, stirring, until golden brown, 3 to 5 minutes. Remove from heat, then stir in the garlic and season with salt and pepper.", "Stir the Parmesan and herbs into the orzo, taste, then season with salt, pepper and additional lemon juice, if desired. Top with the toasted bread crumbs and more Parmesan if you like. Serve warm or at room temperature."]
+},
+{
+  title: "Sweet potato coconut lentil soup",
+  image: "https://www.halfbakedharvest.com/wp-content/uploads/2018/10/Coconut-Sweet-Potato-Lentil-Soup-with-Rice-4-700x1050.jpg",
+  description: "Good soup",
+  link: "https://www.halfbakedharvest.com/coconut-sweet-potato-lentil-soup-with-rice/",
+  ingredients: [ "2 tbsp extra virgin olive oil",
+  "1/2 yellow onion, chopped",
+  "1 inch fresh ginger, grated",
+  "2 cloves garlic, minced",
+  "2 sweet potatoes, peeled and cubed",
+  "1 tbsp yellow curry powder",
+  "1/2 tsp cayenne pepper (adjust to taste)",
+  "4 cups  vegetable broth or water",
+  "3/4 cup dried red lentils",
+  "Kosher salt, to taste",
+  "1 can coconut milk",
+  "2 cups baby spinach",
+  "optional chickpeas or rice",
+  "Fresh naan, for serving"],
+  instructions: ["Heat the olive oil in a large pot over medium heat. When the oil shimmers, add the onion and cook 5 minutes until soft. Add the ginger, garlic, and sweet potatoes and cook until fragrant, about 2 minutes. Stir in the curry powder and cayenne and cook another minute.", "Add the broth and lentils. Season generously with salt. Bring the mix to a boil over high heat, then reduce the heat to low. Cover and simmer 15-20 minutes, until the lentils are soft and the sweet potatoes tender.", "Stir in the coconut milk and spinach, cook 5 minutes. Remove from the heat and add the cilantro."]
+},
+{
+  title: "Pear Blue Cheese Salad",
+  image: "https://familystylefood.com/wp-content/uploads/2019/11/pear-arugula-salad-mix.jpg",
+  description: "fresh AND funky",
+  link: "https://familystylefood.com/arugula-pear-salad-3/",
+  ingredients: ["2 tablespoons chopped shallot, about 1", "1 garlic clove, chopped", "¼ cup extra-virgin olive oil", "2 tablespoons honey or maple syrup", "2 tablespoons white wine vinegar or rice vinegar", "1 tablespoon fresh lemon juice", "½ teaspoon fine sea salt", "arugula greens", "⅓ cup thinly sliced red onion", "1 green or red pear, cored and sliced into 1/4inch half-moons", "⅓ cup toasted walnuts", "2 ounces soft goat cheese, crumbled", "2 ounces blue cheese, crumbled", "Freshly ground black pepper to taste", "dried cranberries"],
+  instructions: ["make salad", "make dressing", "badda bing, you're golden"]
+},
+{
+  title: "Flammkuchen",
+  image: "https://lacuisinedegeraldine.fr/wp-content/uploads/2020/12/DSC00027-edited-1-scaled.jpg.webp",
+  description: "Yum yum flame cake!",
+  link: "",
+  ingredients: ["250 g Mehl", "120 ml water", "2 Tbsp olive oil", "1/2 tsp salt", "creme freche", "goat cheese or blue cheese", "pear", "walnuts"],
+  instructions: [
+    "other possible topping ideas: fennel, roasted red pepper or tomato, red onion, rucola"
+  ]
+},
+{
+  title: "Cous Cous salad",
+  image: "https://www.inspiredtaste.net/wp-content/uploads/2017/12/Easy-Couscous-Salad-Recipe-2-1200.jpg",
+  description: "Ksokso 2 go",
+  link: "",
+  ingredients: ["cous cous", "broth", "tomato", "feta", "cucumber", "Salt to taste", "Fresh herbs like parsley, dill, mint, or basil"],
+  instructions: [
+    "For couscous 1:1 ratio"
+  ]
+},
+{
+  title: "Portobello burgers",
+  image: "https://static01.nyt.com/images/2024/04/26/multimedia/as-mushroom-smashburgersrex-wmzc-copy/as-mushroom-smashburgersrex-wmzc-jumbo-v4.jpg?quality=75&auto=webp",
+  description: "",
+  link: "https://cooking.nytimes.com/recipes/1025333-mushroom-smash-burgers",
+  ingredients: ["¼ cup neutral oil, such as grapeseed, plus more as needed", 
+"1 teaspoon onion powder", 
+"Salt and black pepper", 
+"4 large portobello mushrooms, stems removed, wiped clean", 
+"4 slices sharp Cheddar",  
+"2 hamburger buns", 
+"Toppings (such as lettuce, sliced tomato, sliced onion, and pickles) and condiments (mayonnaise, ketchup, and mustard), as desired"],
+  instructions: ["In a small bowl, stir together the oil and onion powder (ALTERNATIVELY: Instead of onion powder, mix oil with balsamic vinagar and soy sauce or tamari)and season with salt and pepper. Score the top of the mushrooms with an X. Coat the mushrooms all over with the oil mixture.", 
+"Heat a large cast-iron skillet over medium-high. Add the mushrooms and place a second heavy skillet on top of the mushrooms. (Wrap the top skillet in foil for easier clean-up.) Cook, flipping the mushrooms every two minutes. Once the mushrooms are flattened, about 4 minutes in, occasionally press down firmly on the top skillet to promote browning. (If you do this before they are flat, you risk splitting the mushroom.) Continue flipping and pressing until the mushrooms are browned and thin, 8 to 10 minutes, reducing the heat if they begin to char. If the mushrooms become matte and wrinkly, drizzle on another tablespoon of oil.", 
+"Reduce heat to low and top with the cheese. Cover with a lid or sheet pan and cook until the cheese is melted, 1 to 2 minutes. Add two mushrooms per bun and desired toppings and condiments."]
+},
+{
+  title: "Chana masala with yogurt sauce and naan",
+  image: "https://thenewbaguette.com/wp-content/uploads/2023/01/easy-chana-masala-27-954x1430.webp",
+  description: "I remember one specific day I had such a strong craving of this and hot damn did it hit the spot",
+  link: "https://thenewbaguette.com/easy-chana-masala-vegan/",
+  ingredients: ["2 tablespoons coconut, avocado, or organic canola oil", 
+"1 teaspoon cumin seeds", 
+"1 medium onion, diced", 
+"Fine sea salt, to taste", 
+"3 medium garlic cloves, minced", 
+"1-inch piece of ginger, peeled and minced (about 2 tablespoons)", 
+"2 teaspoons garam masala", 
+"1 teaspoon ground coriander", 
+"1/4 teaspoon chili flakes (optional)", 
+"Two 15-ounce cans chickpeas, drained and rinsed", 
+"One 8-ounce can tomato sauce", 
+"1 tablespoon lemon juice", 
+"1/2 teaspoon turmeric powder", 
+"Freshly ground black pepper, to taste", 
+"Cilantro or scallions, for serving (optional)",
+"yogurt",
+"cucumber"],
+  instructions: ["Heat 2 tablespoons oil in a medium pot over medium heat. Add 1 teaspoon cumin seeds and cook until they’re browned and fragrant, about 1 minute. Add the onion with a pinch of salt and cook until soft and golden, about 8 minutes.", 
+"Add the garlic and ginger, as well as 2 teaspoons garam masala, 1 teaspoon coriander, and 1/4 teaspoon chili flakes, and cook for 30 seconds more.", 
+"Add half of the chickpeas and crush them with a potato masher until most of them are smashed. Then add the remaining chickpeas, the tomato sauce, 1 tablespoon lemon juice, 1/2 teaspoon turmeric, lots of black pepper, and 1/2 cup water. Stir to combine, cover with a lid, reduce the heat to low, and simmer gently for 15 minutes, stirring occasionally.", 
+"Taste and adjust the seasonings, if needed. Garnish with herbs before serving.",
+"To make raita, mix yogurt, cucumber, and ground cumin/garam masala"]
+},
+{
+  title: "Lentil quesadillas",
+  image: "https://pinchofyum.com/cdn-cgi/image/width=480,height=99999,fit=scale-down/wp-content/uploads/lentil-quesadillas-8.jpg",
+  description: "makes 8 quesadillas",
+  link: "https://pinchofyum.com/quick-and-easy-lentil-quesadillas#tasty-recipes-41029-jump-target",
+  ingredients: ["one 28 ounce can diced tomatoes", "half a yellow onion", "2 cloves garlic", "1 1/2 teaspoons cumin", "2 teaspoons chili powder", "1 teaspoon salt", "1 tablespoon oil", "1 cup uncooked brown or green lentils, rinsed", "1 cup uncooked brown rice, rinsed", "2 1/2 cups vegetable broth", "16 flour tortillas", "3–4 cups shredded Pepperjack cheese", "a few tablespoons butter (optional)", "for green sauce: see link above"],
+  instructions: ["blend sauce ingredients in blender or food processor", "cook rice and lentils in broth", "Heat a skillet over medium high heat. Layer the following: tortilla, 1/4 cup cheese, 1/2 cup filling, 1/4 cup cheese, tortilla. Spread the outsides of the tortillas with butter and fry on each side for 3-5 minutes until golden brown. Remove from heat and let stand for a few minutes (they’ll hold together better). Cut and serve", "for green sauce, see link"]
+},
+{
+  title: "Grilled Cheese",
+  image: "https://grilledcheesesocial.com/wp-content/uploads/2024/04/dill-pickle-grilled-cheese-sandwich-4-1075x1613.jpg",
+  description: "A classic",
+  link: "https://grilledcheesesocial.com/2024/04/01/dill-pickle-grilled-cheese-sandwich-recipe/",
+  ingredients: ["cheddar cheese", "bread or toast", "cornichons", "butter"],
+  instructions: [
+    "As an alternative, a caprese grilled cheese can be made using mozarella, basil, tomato, and balsamico",
+    "Or with the addition of kimchi!",
+    "Or with brie and jam!"
+  ]
+},
+{
+  title: "Sushi",
+  image: "https://media.tacdn.com/media/attractions-splice-spp-674x446/12/d5/bd/84.jpg",
+  description: "Geht immer",
+  link: "https://www.gimmesomeoven.com/sushi-rice/",
+  ingredients: ["nori", "sushi rice", "fish", "rice vinegar", "sugar", "salt", "soy sauce", "wasabi", "cucumber", "cream cheese", "spicy mayo"],      
+  instructions: [
+    "Cook sushi rice in a ratio of 2:2 (or 2:2.5 if using arborio rice)",
+    "For 2 cups sushi rice, mix in 1/4 cup rice vinegar, 4 tsp sugar, 1 tsp salt after cooking",
+    "Frozen edamame can be cooked in boiling water for approximately 5 minutes or until they taste done."
+  ]
+},
+{
+  title: "Mushroom goat cheese puff pastry",
+  image: "https://honestcooking.com/wp-content/uploads/2017/11/Mushroom-Goat-Cheese-Mini-Empanadas-3.jpg",
+  description: "Schlurp",
+  link: "https://honestcooking.com/mushroom-french-goat-cheese-triangles/#:~:text=1%20tablespoon%20butter&text=1%20tablespoon%20olive%20oil&text=Heat%20oil%20and%20butter%20in%20a%20medium%20skillet%20over%20medium%20heat&text=Add%20onion%20and%20saut%C3%A9%20until%20soft%2C%20about%203%20minutes",
+  ingredients: ["Mushrooms", "Ziegenfrischkäse", "Onion", "Puff pastry (or Filo dough)", "Fresh rosemary"],
+  instructions: [
+    "cook mushrooms and onions in butter and garlic",
+    "make squares out of puff pastry",
+    "Fill with mushroom mix, dollop of goat cheese, and rosemary - not too full!.", 
+"close and use fork to seal the sides, then bake according to dough instructions."
+  ]
+},
+{
+  title: "Tomato-Lentil Soup With Goat Cheese",
+  image: "https://static01.nyt.com/images/2023/02/27/multimedia/AS-Red-Lentil-Soup-With-Herbed-Goat-Cheese--ztkl/AS-Red-Lentil-Soup-With-Herbed-Goat-Cheese--ztkl-mediumSquareAt3X.jpg",
+  description: "thx ma",
+  link: "https://cooking.nytimes.com/recipes/1023962-tomato-lentil-soup-with-goat-cheese",
+  ingredients: [  "3 tablespoons unsalted butter or olive oil",
+  "1 (4½ ounce) tube double concentrate tomato paste or 6 ounces (1 can) tomato paste",
+  "3 garlic cloves, finely grated",
+  "1½ teaspoons ground coriander",
+  "1 teaspoon Italian seasoning, za’atar, or dried oregano",
+  "½ teaspoon red-pepper flakes, plus more for serving",
+  "1 cup red lentils",
+  "Kosher salt (Diamond Crystal)",
+  "1 lemon",
+  "4 ounces regular or herb goat cheese, cut into 8 slices"],
+  instructions: ["In a large Dutch oven, melt the butter over medium. Add the tomato paste, garlic, coriander, ½ teaspoon Italian seasoning and the red-pepper flakes. Stir until the tomato paste is a shade darker and sticking to the bottom of the pot, 2 to 4 minutes. (Try not to rush this step; it’s where the flavor of the soup develops.)", 
+"Add 4 ½ cups of water, the lentils and 1 teaspoon salt. Increase heat to medium-high, scrape any browned bits stuck to the pot and stir to break up the big chunks of tomato paste. Partially cover the pot and bring to a simmer, then completely cover, reduce heat to medium-low, and cook until the lentils start to break down and lose their shape, 15 to 20 minutes. Stir occasionally and scrape any stuck lentils from the bottom of the pot.", 
+"Meanwhile, zest the lemon into a small bowl. Cut the lemon into wedges for serving. Add the remaining ½ teaspoon Italian seasoning to the lemon zest and season with salt and more red-pepper flakes. Rub with your fingers until you smell lemon; set aside.", 
+"Turn off the heat under the lentils. Season to taste with salt. Place the goat cheese on top of the lentils, then sprinkle the goat cheese with the lemon-herb mixture. Cover the pot and let sit until the goat cheese is softened, 3 to 5 minutes. Serve the soup with a lemon wedge for squeezing over."]
+},
+{
+  title: "Tacos with pulled pork oyster mushrooms and pickled red onion",
+  image: "",
+  description: "I have never actually made this but it sounds like something that would be yummy so BAM - here's your inspiration",
+  link: "",
+  ingredients: [],
+  instructions: []
+},
+{
+  title: "Coconut black bean soup",
+  image: "https://static01.nyt.com/images/2024/01/24/multimedia/24BIG-APPETITE-COCONUTMILKrex3-qphm/24BIG-APPETITE-COCONUTMILKrex3-qphm-master768-v4.jpg?quality=75&auto=webp",
+  description: "Looks like mud, tastes like comfort",
+  link: "https://cooking.nytimes.com/recipes/1025039-coconut-black-bean-soup",
+  ingredients: [ "1 large white onion, peeled",
+  "2 limes, 1 halved and 1 cut into wedges",
+  "1¾ teaspoons kosher salt (Diamond Crystal or use ¾ teaspoon Morton), plus more to taste",
+  "1 tablespoon extra-virgin olive oil",
+  "4 garlic cloves, minced",
+  "1 jalapeño, seeded if desired and minced",
+  "1 bunch cilantro, stems and leaves separated",
+  "1 tablespoon tomato paste",
+  "1 teaspoon cumin seeds",
+  "½ teaspoon freshly ground black pepper",
+  "3 (15.5-ounce) cans black beans, drained",
+  "1 (13.5-ounce) can full-fat coconut milk",
+  "1 cup vegetable or chicken stock, plus more if needed"],
+  instructions: ["Cut the white onion in half lengthwise and then cut lengthwise again into quarters. Thinly slice one quarter of the onion. Add slices to a small bowl and stir in the juice of ½ lime and ¼ teaspoon salt. Set aside for serving. Dice the remaining onion and reserve.", 
+"Heat a large soup pot or Dutch oven over medium-high. Once hot, add the oil. Add the diced onion and cook until tender and golden at the edges, 3 to 5 minutes. Stir in the garlic and cook for 1 minute or until fragrant.", 
+"Stir in the jalapeño. Mince ¼ cup cilantro stems and add to the pan. Cook until the jalapeño and cilantro stems are tender, about 2 minutes. Stir in the tomato paste, cumin seeds, black pepper and remaining 1½ teaspoons salt. Cook for 1 to 2 minutes, until the tomato paste darkens.", 
+"Add in the black beans, coconut milk and stock. Bring to a boil and lower heat to a simmer. Simmer for 15 to 20 minutes, or until the mixture is thick.", 
+"Use an immersion blender or blender to purée the soup until half-smooth and still a little chunky. Add more stock if you want a brothier soup.", 
+"Stir in the juice of the remaining lime half and ½ cup of chopped cilantro leaves. Taste and add more salt and lime juice as needed. Serve topped with the pickled onions and more chopped cilantro, and with lime wedges alongside."]
+},
+{
+  title: "Wraps",
+  image: "https://www.ambitiouskitchen.com/wp-content/uploads/2018/02/thaiwrap-3.jpg",
+  description: "Easy peasy lemon squeezy",
+  link: "",
+  ingredients: ["tortilla", "fallafel", "tomato", "onion", "avocado", "beans", "corn", "chickpeas", "lettuce", "tofu", "sour cream", "pickled onions", "cheese", "cucumber", "red cabbage", "tzatziki"],
+  instructions: ["take what ever ya want n wrap it up"]
+},
+{
+  title: "Orecchiette Salad With Halloumi Croutons",
+  image: "https://static01.nyt.com/images/2023/05/25/multimedia/ya-pasta-salad-with-halloumi-vzct/ya-pasta-salad-with-halloumi-vzct-master768-v3.jpg?quality=75&auto=webp",
+  description: "hella halloumi",
+  link: "https://cooking.nytimes.com/recipes/1024058-orecchiette-salad-with-halloumi-croutons",
+  ingredients: ["1 pint cherry or grape tomatoes, halved",  
+"4 tablespoons olive oil, plus more as needed", 
+"2 tablespoons red wine vinegar, plus more as needed", 
+"Kosher salt and freshly ground pepper", 
+"8 ounces orecchiette or other small pasta",  
+"8 ounces halloumi cheese, chopped into ½-inch pieces", 
+"3 Persian cucumbers, chopped into ½-inch pieces", 
+"2 cups baby arugula (optional)", 
+"½ cup chopped fresh cilantro", 
+"½ cup chopped fresh mint", 
+"¼ cup finely chopped red onion"],
+  instructions: ["In a large bowl, combine the tomatoes, 2 tablespoons olive oil, the vinegar, ½ teaspoon salt and ½ teaspoon pepper.", 
+"Bring a large pot of salted water to a boil, and cook the pasta to al dente according to package directions. Drain the pasta well and add it to the tomato mixture while still warm. Stir gently to combine, then let the mixture cool slightly.", 
+"While the mixture cools, in a large nonstick skillet, heat 2 tablespoons olive oil over medium-high. Pat the halloumi dry with paper towels, then cook it until golden-brown, stirring occasionally, 3 to 5 minutes.", 
+"Add the cucumbers, arugula (if using), cilantro, mint and red onion to the pasta; stir to combine. Top with the halloumi, then add more salt, pepper, olive oil and vinegar to taste. Serve immediately."]
+},
+{
+  title: "Vegetarian Sundubu/kimchi jjigae",
+  image: "https://veggieanh.com/wp-content/uploads/2023/11/Kimchi-Jjigae-Vegan-1536x1024.jpg",
+  description: "The best thing I know how to cook",
+  link: "https://veggieanh.com/kimchi-jjigae/",
+  ingredients: ["1 tbsp cooking oil",
+  "1 tsp sesame oil",
+  "1 onion",
+  "3 cloves garlic",
+  "½ cup kimchi, chopped or cut with scissors",
+  "60 ml kimchi juice",
+  "4 cups kombu stock (combine the hot water and a piece of kombu or the dried shiitake mushrooms) *",
+  "1 tbsp gochujang",
+  "2 tsp gochugaru ",
+  "1 tbsp soy sauce",
+  "¼ head of cabbage",
+  "Mushrooms of choice (shiitake or enoki recommended)",
+  "200 g soft tofu",
+  "Green onions, thinly sliced for toppings",
+  "Rice to enjoy with"],
+  instructions: ["Boil the water, then pour the boiled water into a big bowl. Add the kombu and let sit for 15 minutes.", "Slice the onion into chunks and mince the garlic cloves.", "On a pot on medium heat, heat up the cooking oil and sesame oil. Add in the onion and garlic and stir for 1-2 minutes until the onion becomes transparent.", "Add in 1 tablespoon gochujang, 2 teaspoon gochugaru, 1 tablespoon soy sauce, the kimchi and stir for 3 minutes.", "Add in kimchi juice and kombu stock. Bring to a boil", "Meanwhile, thinly slice the cabbage, mushroom and tofu.", "Add the cabbage and mushroom to the pot and simmer for 7-10 minutes until softened.", "Add in the tofu and sprinkle with some green onions and sesame seeds.", "Serve the kimchi jjigae with a warm bowl of rice and enjoy!"]
+},
+{
+  title: "Chickpea Stew With Orzo and Mustard Greens",
+  image: "https://static01.nyt.com/images/2021/09/26/dining/26fast-chickpea-stew/merlin_193478346_9a3dff0c-cc27-4425-ae2b-d59473c47ec4-master768.jpg?quality=75&auto=webp",
+  description: "",
+  link: "https://cooking.nytimes.com/recipes/1015767-chickpea-stew-with-orzo-and-mustard-greens",
+  ingredients: ["2 tablespoons extra-virgin olive oil, more for drizzling", 
+"2 medium carrots, peeled and chopped", 
+"1 small fennel bulb or 2 celery stalks, chopped", 
+"1 medium onion, chopped", 
+"2 garlic cloves, minced", 
+"Pinch of red-pepper flakes", 
+"2 teaspoons minced fresh rosemary (optional)", 
+"2 cups chicken or vegetable broth (or water)", 
+"1(15-ounce) can chickpeas, rinsed and drained", 
+"¾ cup roughly chopped cherry or grape tomatoes", 
+"½ cup whole-wheat or regular orzo", 
+"1quart loosely packed baby mustard greens or spinach (about 5 ounces)", 
+"Salt and black pepper", 
+"Chopped scallions, for garnish (optional)", 
+"¼ cup finely grated Parmigiano-Reggiano, plus more as needed"],
+  instructions: ["In a large pot, heat the olive oil over medium-high. Add the carrots, fennel or celery, and onion. Cook until tender, about 5 to 7 minutes. Add the garlic, red-pepper flakes and rosemary, if using, and cook for another 2 minutes. Pour in the broth, if using, or water, along with another 2 cups water, and bring to a boil.", 
+"Once the mixture is boiling, add the chickpeas, tomatoes and orzo. Reduce to a simmer and cover with a lid. Simmer 10 minutes, or until the orzo is tender. Uncover and stir in the greens, letting them simmer until soft, about 2 minutes.", 
+"Add more water if you want the mixture to be more souplike, and season with salt and pepper. Ladle into bowls and top with chopped scallions (if desired), grated cheese and a drizzle of olive oil."]
+},
+{
+  title: "Poke Bowl",
+  image: "images/poke.jpg",
+  description: "tfw u steal maggies recipes",
+  link: "https://www.gimmesomeoven.com/sushi-rice/",
+  ingredients: ["sushi rice", "avocado", "edamame", "cucumber", "wakame (optional)", "sushi fish (optional)", "nori", "sesame seeds", "mayo", "soy sauce", "tahini or peanut butter", "toasted sesame oil", "rice vinegar", "sugar"],
+  instructions: [
+    "To make japanese Kewpie mayo, mix one tablespoon of normal mayo with 1/2 teaspoon rice vinegar and 1/8 teaspoon sugar",
+    "Mix together soy sauce, tahini or peanut butter, sesame oil, mayo, rice vinegar, and sugar according to taste",
+    "Cook sushi rice in a ratio of 2:2 (or 2:2.5 if using arborio rice)",
+    "For 2 cups sushi rice, mix in 1/4 cup rice vinegar, 4 tsp sugar, 1 tsp salt after cooking",
+    "Frozen edamame can be cooked in boiling water for approximately 5 minutes or until they taste done."
+  ]
+}
+    ];
+
+function showRandomRecipe() {
+      const randomIndex = Math.floor(Math.random() * recipes.length);
+      const recipe = recipes[randomIndex];
+
+      document.getElementById("recipeTitle").textContent = recipe.title;
+      document.getElementById("recipeDescription").textContent = recipe.description;
+      document.getElementById("recipeImage").src = recipe.image;
+      document.getElementById("recipeImage").alt = recipe.title;
+
+  const recipeLinkElement = document.getElementById("recipeLink");
+  if (typeof recipe.link === "string" && recipe.link.trim() !== "") {
+    recipeLinkElement.innerHTML = `<a href="${recipe.link}" target="_blank">Taken From Here</a>`;
+  } else if (Array.isArray(recipe.link) && recipe.link.length > 0) {
+    recipeLinkElement.innerHTML = `<a href="${recipe.link[0]}" target="_blank">View Recipe</a>`;
+  } else {
+    recipeLinkElement.textContent = "";
+  }
+
+      const ingredientsList = document.getElementById("recipeIngredients");
+      ingredientsList.innerHTML = "";
+      recipe.ingredients.forEach(ingredient => {
+        const li = document.createElement("li");
+        li.textContent = ingredient;
+        ingredientsList.appendChild(li);
+      });
+
+      const instructionsList = document.getElementById("recipeInstructions");
+      instructionsList.innerHTML = "";
+      recipe.instructions.forEach(step => {
+        const li = document.createElement("li");
+        li.textContent = step;
+        instructionsList.appendChild(li);
+      });
+
+      document.getElementById("recipeContainer").style.display = "block";
+    }
+  </script>
+
+</body>
+</html>
